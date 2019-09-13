@@ -41,7 +41,7 @@ Public Class Form1
 
         If TextBoxWhere1.IsValid Then
 
-            DataGridView1.DataSource = _dataOperations.PopulateDataDataGridView(TextBoxWhere1.Statement)
+            DataGridView1.DataSource = _dataOperations.Read(TextBoxWhere1.Statement)
 
             _dataOperations.TableNames()
 
@@ -65,7 +65,7 @@ Public Class Form1
         TextBoxWhere1.CreateWhereStatement()
 
         If TextBoxWhere1.IsValid Then
-            DataGridView1.DataSource = _dataOperations.PopulateDataDataGridView(TextBoxWhere1.Statement)
+            DataGridView1.DataSource = _dataOperations.Read(TextBoxWhere1.Statement)
         Else
             DataGridView1.DataSource = Nothing
         End If
@@ -83,7 +83,7 @@ Public Class Form1
         TextBoxWhere1.CreateWhereStatement()
 
         If TextBoxWhere1.IsValid Then
-            DataGridView1.DataSource = _dataOperations.PopulateDataDataGridView(TextBoxWhere1.Statement)
+            DataGridView1.DataSource = _dataOperations.Read(TextBoxWhere1.Statement)
         Else
             DataGridView1.DataSource = Nothing
             MessageBox.Show("Not configured correctly")
@@ -102,7 +102,7 @@ Public Class Form1
         TextBoxWhere1.CreateWhereStatement()
 
         If TextBoxWhere1.IsValid Then
-            DataGridView1.DataSource = _dataOperations.PopulateDataDataGridView(TextBoxWhere1.Statement)
+            DataGridView1.DataSource = _dataOperations.Read(TextBoxWhere1.Statement)
         Else
             DataGridView1.DataSource = Nothing
             MessageBox.Show("Not configured correctly")
@@ -120,7 +120,7 @@ Public Class Form1
         TextBoxWhere1.CreateWhereStatement()
 
         If TextBoxWhere1.IsValid Then
-            DataGridView1.DataSource = _dataOperations.PopulateDataDataGridView(TextBoxWhere1.Statement)
+            DataGridView1.DataSource = _dataOperations.Read(TextBoxWhere1.Statement)
 
         Else
             DataGridView1.DataSource = Nothing
@@ -139,7 +139,7 @@ Public Class Form1
         TextBoxWhere1.CreateWhereStatement()
 
         If TextBoxWhere1.IsValid Then
-            DataGridView1.DataSource = _dataOperations.PopulateDataDataGridView(TextBoxWhere1.Statement)
+            DataGridView1.DataSource = _dataOperations.Read(TextBoxWhere1.Statement)
             If DataGridView1.Rows.Count = 1 AndAlso CType(DataGridView1.DataSource, DataTable).Rows.Count = 0 Then
                 MessageBox.Show($"No matches for column {TextBoxWhere1.ColumnName} using{Environment.NewLine}{TextBoxWhere1.Where}")
             End If
@@ -159,7 +159,7 @@ Public Class Form1
         TextBoxWhere1.CreateWhereStatement()
 
         If TextBoxWhere1.IsValid Then
-            DataGridView1.DataSource = _dataOperations.PopulateDataDataGridView(TextBoxWhere1.Statement)
+            DataGridView1.DataSource = _dataOperations.Read(TextBoxWhere1.Statement)
             If DataGridView1.Rows.Count = 1 AndAlso CType(DataGridView1.DataSource, DataTable).Rows.Count = 0 Then
                 MessageBox.Show($"No matches for column {TextBoxWhere1.ColumnName} using{Environment.NewLine}{TextBoxWhere1.Where}")
             End If
@@ -179,7 +179,7 @@ Public Class Form1
         TextBoxWhere1.CreateWhereStatement()
 
         If TextBoxWhere1.IsValid Then
-            DataGridView1.DataSource = _dataOperations.PopulateDataDataGridView(TextBoxWhere1.Statement)
+            DataGridView1.DataSource = _dataOperations.Read(TextBoxWhere1.Statement)
             If DataGridView1.Rows.Count = 1 AndAlso CType(DataGridView1.DataSource, DataTable).Rows.Count = 0 Then
                 MessageBox.Show($"No matches for column {TextBoxWhere1.ColumnName} using{Environment.NewLine}{TextBoxWhere1.Where}")
             End If

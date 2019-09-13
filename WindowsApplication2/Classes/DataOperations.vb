@@ -1,4 +1,7 @@
-﻿Namespace Classes
+﻿Imports BuilderLibrary
+Imports DataProviderCommandHelpers
+
+Namespace Classes
     ''' <summary>
     ''' Data methods for statements generated in custom TextBox.
     ''' BaseConnectionLibrary is a NuGet package.
@@ -6,16 +9,33 @@
     Public Class DataOperations
         Inherits BaseConnectionLibrary.ConnectionClasses.SqlServerConnection
         Public Sub New()
-            DefaultCatalog = "ForumExamples"
+            DefaultCatalog = "NorthWindAzureForInserts"
             DatabaseServer = "KARENS-PC"
         End Sub
         ''' <summary>
         ''' Get data 
         ''' </summary>
-        ''' <param name="pSelectStatement">Valid SELECT statement</param>
+        ''' <param name="pContactTitleList">List of contact titles</param>
         ''' <returns>Populated DataTable or empty DataTable for runtime error</returns>
-        Public Function Read(pSelectStatement As String) As DataTable
+        Public Function ReadCustomersByContactType(pContactTitleList As List(Of String)) As DataTable
+
             mHasException = False
+
+            Dim parameterPrefix As String = "CT.ContactTitle"
+            Dim selectStatement =
+                    <SQL>
+                    SELECT C.CustomerIdentifier ,
+                           C.CompanyName ,
+                           C.ContactName ,
+                           C.ContactTypeIdentifier ,
+                           FORMAT(C.ModifiedDate, 'MM-dd-yyyy', 'en-US') AS ModifiedDate,
+                           CT.ContactTitle
+                    FROM   dbo.Customers AS C
+                           INNER JOIN dbo.ContactType AS CT ON C.ContactTypeIdentifier = CT.ContactTypeIdentifier
+	                       WHERE <%= parameterPrefix %> IN ({0}) ORDER BY C.CompanyName
+                    </SQL>.Value
+
+            Dim CommandText = BuildWhereInClause(selectStatement, parameterPrefix, pContactTitleList)
 
             Dim dt As New DataTable
 
@@ -23,12 +43,13 @@
 
                 Using cmd As New SqlClient.SqlCommand With {.Connection = cn}
 
-                    cmd.CommandText = pSelectStatement
-
-                    cn.Open()
+                    cmd.CommandText = CommandText
+                    cmd.AddParamsToCommand(parameterPrefix, pContactTitleList)
 
                     Try
+                        cn.Open()
                         dt.Load(cmd.ExecuteReader)
+                        dt.Columns("ContactTypeIdentifier").ColumnMapping = MappingType.Hidden
                     Catch ex As Exception
                         mHasException = True
                         mLastException = ex
@@ -40,6 +61,38 @@
             Return dt
 
         End Function
+        Public Function ContactTypeList() As List(Of ContactType)
+            mHasException = False
+
+            Dim contactTypes As New List(Of ContactType)
+
+            Using cn As New SqlClient.SqlConnection With {.ConnectionString = ConnectionString}
+                Using cmd As New SqlClient.SqlCommand With {.Connection = cn}
+                    cmd.CommandText = "SELECT ContactTypeIdentifier, ContactTitle FROM dbo.ContactType"
+
+                    Try
+                        cn.Open()
+                        Dim reader = cmd.ExecuteReader()
+
+                        While reader.Read()
+                            contactTypes.Add(New ContactType() With
+                                                {
+                                                    .ContactTypeIdentifier = reader.GetInt32(0),
+                                                    .ContactTitle = reader.GetString(1)
+                                                })
+                        End While
+
+                    Catch ex As Exception
+                        mHasException = True
+                        mLastException = ex
+                    End Try
+                End Using
+            End Using
+
+            Return contactTypes
+
+        End Function
+
         ''' <summary>
         ''' Get table names using DefaultCatalog and DatabaseServer
         ''' set in the new constructor
@@ -61,9 +114,8 @@
             Using cn As New SqlClient.SqlConnection With {.ConnectionString = ConnectionString}
                 Using cmd As New SqlClient.SqlCommand With {.Connection = cn, .CommandText = selectStatement}
 
-                    cn.Open()
-
                     Try
+                        cn.Open()
                         Dim reader = cmd.ExecuteReader()
 
                         While reader.Read()
