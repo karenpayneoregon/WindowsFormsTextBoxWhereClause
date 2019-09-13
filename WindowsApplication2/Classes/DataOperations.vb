@@ -21,7 +21,10 @@ Namespace Classes
 
             mHasException = False
 
-            Dim parameterPrefix As String = "CT.ContactTitle"
+            ' field which the WHERE IN will use
+            Dim parameterPrefix = "CT.ContactTitle"
+
+            ' Base SELECT Statement
             Dim selectStatement =
                     <SQL>
                     SELECT C.CustomerIdentifier ,
@@ -31,10 +34,12 @@ Namespace Classes
                            FORMAT(C.ModifiedDate, 'MM-dd-yyyy', 'en-US') AS ModifiedDate,
                            CT.ContactTitle
                     FROM   dbo.Customers AS C
-                           INNER JOIN dbo.ContactType AS CT ON C.ContactTypeIdentifier = CT.ContactTypeIdentifier
-	                       WHERE <%= parameterPrefix %> IN ({0}) ORDER BY C.CompanyName
+                    INNER JOIN dbo.ContactType AS CT ON C.ContactTypeIdentifier = CT.ContactTypeIdentifier
+	                WHERE <%= parameterPrefix %> IN ({0}) 
+                    ORDER BY C.CompanyName
                     </SQL>.Value
 
+            ' Builds the SELECT statement minus values
             Dim CommandText = BuildWhereInClause(selectStatement, parameterPrefix, pContactTitleList)
 
             Dim dt As New DataTable
@@ -44,12 +49,18 @@ Namespace Classes
                 Using cmd As New SqlClient.SqlCommand With {.Connection = cn}
 
                     cmd.CommandText = CommandText
+
+                    '
+                    ' Add values for command parameters
+                    '
                     cmd.AddParamsToCommand(parameterPrefix, pContactTitleList)
 
                     Try
                         cn.Open()
+
                         dt.Load(cmd.ExecuteReader)
                         dt.Columns("ContactTypeIdentifier").ColumnMapping = MappingType.Hidden
+
                     Catch ex As Exception
                         mHasException = True
                         mLastException = ex
@@ -61,6 +72,10 @@ Namespace Classes
             Return dt
 
         End Function
+        ''' <summary>
+        ''' Get a list of all contact types
+        ''' </summary>
+        ''' <returns></returns>
         Public Function ContactTypeList() As List(Of ContactType)
             mHasException = False
 
@@ -71,6 +86,7 @@ Namespace Classes
                     cmd.CommandText = "SELECT ContactTypeIdentifier, ContactTitle FROM dbo.ContactType"
 
                     Try
+
                         cn.Open()
                         Dim reader = cmd.ExecuteReader()
 
@@ -92,7 +108,6 @@ Namespace Classes
             Return contactTypes
 
         End Function
-
         ''' <summary>
         ''' Get table names using DefaultCatalog and DatabaseServer
         ''' set in the new constructor
