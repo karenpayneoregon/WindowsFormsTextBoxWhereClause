@@ -3,4 +3,4 @@ A fundamental operation in data centric Window Forms application is filtering an
 
 ## TextBoxWhere custom TextBox
 
-TechNet article location
+[TechNet article location](https://social.technet.microsoft.com/wiki/contents/articles/53293.vb-net-windows-forms-create-sql-where-in-from-delimited-values-with-custom-controls.aspx)

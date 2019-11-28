@@ -29,9 +29,11 @@ Public Module SqlWhereInParameterBuilder
     ''' <param name="parameters">Value list for WHERE IN</param>
     ''' <returns>SELECT Statement with WHERE condition ready to populate values</returns>
     Public Function BuildWhereInClause(Of T)(partialClause As String, paramPrefix As String, parameters As IEnumerable(Of T)) As String
+
         paramPrefix = StripFunction(paramPrefix)
 
-        Dim parameterNames = parameters.Select(Function(paramText, paramNumber) $"@{paramPrefix.Replace(".", "")}{paramNumber}").ToArray()
+        Dim parameterNames = parameters.Select(
+            Function(paramText, paramNumber) $"@{paramPrefix.Replace(".", "")}{paramNumber}").ToArray()
 
         Dim whereInClause = String.Format(partialClause.Trim(), String.Join(",", parameterNames))
 
@@ -41,7 +43,7 @@ Public Module SqlWhereInParameterBuilder
     ''' <summary>
     ''' Create a parameter for each value in parameters
     ''' </summary>
-    ''' <typeparam name="T">Command with paramers setup</typeparam>
+    ''' <typeparam name="T">Command with parameters setup</typeparam>
     ''' <param name="cmd">Command object</param>
     ''' <param name="paramPrefix">Field name for the WHERE IN</param>
     ''' <param name="parameters">Values for the WHERE IN</param>
@@ -50,7 +52,8 @@ Public Module SqlWhereInParameterBuilder
         paramPrefix = StripFunction(paramPrefix)
 
         Dim parameterValues = parameters.Select(Function(paramText) paramText).ToArray()
-        Dim parameterNames() As String = parameterValues.Select(Function(paramText, paramNumber) $"@{paramPrefix.Replace(".", "")}{paramNumber}").ToArray()
+        Dim parameterNames() As String = parameterValues.Select(
+            Function(paramText, paramNumber) $"@{paramPrefix.Replace(".", "")}{paramNumber}").ToArray()
 
         For index As Integer = 0 To parameterNames.Length - 1
             cmd.Parameters.AddWithValue(parameterNames(index), parameterValues(index))
@@ -70,7 +73,7 @@ Public Module SqlWhereInParameterBuilder
     ''' </summary>
     ''' <param name="pValue"></param>
     ''' <returns></returns>
-    Private Function StripFunction(ByVal pValue As String) As String
+    Private Function StripFunction(pValue As String) As String
         If pValue.Contains("(") Then
             Dim regularExpressionPattern As String = "(?<=\()[^}]*(?=\))"
             Dim re As New Regex(regularExpressionPattern)

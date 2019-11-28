@@ -41,6 +41,5 @@ Public Class Form1
         For index As Integer = 0 To ContactTypesCheckedComboBox1.Items.Count - 1
             ContactTypesCheckedComboBox1.SetItemChecked(index, False)
         Next
-
     End Sub
 End Class
